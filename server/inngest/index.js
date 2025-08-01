@@ -2,7 +2,10 @@ import { Inngest } from "inngest";
 import User from "../models/User.js";
 import connectDB from "../configs/db.js";
 
-export const inngest = new Inngest({ id: "Movie Ticket Booking", name: "Movie Ticket Booking App", });
+export const inngest = new Inngest({
+    id: "Movie Ticket Booking", name: "Movie Ticket Booking App",
+    signingKey: process.env.INNGEST_SIGNING_KEY,
+});
 
 const syncUserCreation = inngest.createFunction(
     { id: 'sync-user-rom-clerk' },
@@ -43,5 +46,7 @@ const syncUserUpdation = inngest.createFunction(
         await User.findByIdAndUpdate(id, userData);
     }
 );
+console.log("Event Key:", process.env.INNGEST_EVENT_KEY);
+console.log("Signing Key:", process.env.INNGEST_SIGNING_KEY);
 
 export const functions = [syncUserCreation, syncUserDeletion, syncUserUpdation];
