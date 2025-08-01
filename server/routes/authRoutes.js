@@ -1,10 +1,20 @@
-import express from 'express';
+// routes/authRoutes.js
+import express from "express";
 const router = express.Router();
 
-router.post('/signup', (req, res) => {
+router.get("/", (req, res) => {
+  res.send("Auth route is working ✅");
+});
+
+router.post("/signup", (req, res) => {
   const { email, password } = req.body;
-  // TODO: Add your signup logic here (e.g., save to DB, verify, etc.)
-  res.json({ message: 'User signed up!', email });
+
+  // Optional: Validate email/password, check if user exists, save to DB, etc.
+
+  res.json({
+    message: "Signup successful!",
+    email,
+  });
 });
 
 export default router;
