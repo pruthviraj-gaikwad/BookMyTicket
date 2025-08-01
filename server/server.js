@@ -19,4 +19,11 @@ app.use(clerkMiddleware())
 app.get('/',(req,res)=>res.send('Sever is Live!'))
 app.use("/api/inngest", serve({ client: inngest, functions }))
 
+const clerkPublishableKey = process.env.CLERK_PUBLISHABLE_KEY;
+
+if (!clerkPublishableKey) {
+  console.error("CLERK_PUBLISHABLE_KEY is missing in environment");
+  process.exit(1);
+}
+
 app.listen(port,()=>console.log(`Server listening at http://localhost:${port}`));

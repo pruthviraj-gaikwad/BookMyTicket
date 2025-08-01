@@ -43,5 +43,5 @@ const syncUserUpdation = inngest.createFunction(
         await User.findByIdAndUpdate(id, userData);
     }
 );
-
+console.log("CLERK_PUBLISHABLE_KEY:", process.env.CLERK_PUBLISHABLE_KEY);
 export const functions = [syncUserCreation, syncUserDeletion, syncUserUpdation];
