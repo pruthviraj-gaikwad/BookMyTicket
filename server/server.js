@@ -45,7 +45,7 @@ app.use(cors());
 app.get('/', (req, res) => res.send('Server is Live!'));
 
 // Inngest webhook route for Clerk events
-app.use("/api/inngest", serve({ client: inngest, functions }));
+app.use("/api/inngest", serve({ client: inngest, functions, disableSignatureCheck: true }));
 
 // Protected routes (require Clerk auth)
 app.use(clerkMiddleware());
@@ -56,63 +56,63 @@ app.post('/api/add', addShow);
 
 // CREATE user manually
 app.post("/api/test-user", async (req, res) => {
-  try {
-    const { name, email, image, _id } = req.body;
-    if (!name || !email) return res.status(400).json({ error: "Name and email required" });
+    try {
+        const { name, email, image, _id } = req.body;
+        if (!name || !email) return res.status(400).json({ error: "Name and email required" });
 
-    await inngest.send({
-      name: "clerk/user.created",
-      data: { id: _id, name, email, image }
-    });
+        await inngest.send({
+            name: "clerk/user.created",
+            data: { id: _id, name, email, image }
+        });
 
-    res.json({ success: true, message: "Create user event sent to Inngest" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
+        res.json({ success: true, message: "Create user event sent to Inngest" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // UPDATE user manually
 app.put("/api/test-update", async (req, res) => {
-  try {
-    const { id, ...updateData } = req.body;
-    if (!id) return res.status(400).json({ error: "User ID is required" });
-    if (!updateData || Object.keys(updateData).length === 0)
-      return res.status(400).json({ error: "No update data provided" });
+    try {
+        const { id, ...updateData } = req.body;
+        if (!id) return res.status(400).json({ error: "User ID is required" });
+        if (!updateData || Object.keys(updateData).length === 0)
+            return res.status(400).json({ error: "No update data provided" });
 
-    await inngest.send({
-      name: "clerk/user.updated",
-      data: { id, ...updateData }
-    });
+        await inngest.send({
+            name: "clerk/user.updated",
+            data: { id, ...updateData }
+        });
 
-    res.json({ success: true, message: "Update user event sent to Inngest" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
+        res.json({ success: true, message: "Update user event sent to Inngest" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // DELETE user manually
 app.delete("/api/test-delete", async (req, res) => {
-  try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ error: "User ID is required" });
+    try {
+        const { id } = req.body;
+        if (!id) return res.status(400).json({ error: "User ID is required" });
 
-    await inngest.send({
-      name: "clerk/user.deleted",
-      data: { id }
-    });
+        await inngest.send({
+            name: "clerk/user.deleted",
+            data: { id }
+        });
 
-    res.json({ success: true, message: "Delete user event sent to Inngest" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
+        res.json({ success: true, message: "Delete user event sent to Inngest" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Start server after connecting to MongoDB
 (async () => {
-  await connectDB();
-  app.listen(port, () => console.log(`✅ Server listening at http://localhost:${port}`));
+    await connectDB();
+    app.listen(port, () => console.log(`✅ Server listening at http://localhost:${port}`));
 })();
 
