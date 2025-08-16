@@ -45,7 +45,7 @@ app.use(cors());
 app.get('/', (req, res) => res.send('Server is Live!'));
 
 // Inngest webhook route for Clerk events
-app.use("/api/inngest", serve({ client: inngest, functions, disableSignatureCheck: true }));
+app.use("/api/inngest", serve({ client: inngest, functions }));
 
 // Protected routes (require Clerk auth)
 app.use(clerkMiddleware());
