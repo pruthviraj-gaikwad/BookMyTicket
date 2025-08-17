@@ -56,6 +56,7 @@ app.post('/api/add', addShow);
 
 // CREATE user manually
 app.post("/api/test-user", async (req, res) => {
+    console.log("REQ BODY:", req.body);
     try {
         const { name, email, image, _id } = req.body;
         if (!name || !email) return res.status(400).json({ error: "Name and email required" });
