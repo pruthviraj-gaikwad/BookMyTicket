@@ -156,20 +156,21 @@ export const functions = [
     { event: "clerk/user.created" },
     async ({ event }) => {
       await connectDB();
-      const clerkUser = event.data;
+      const { id, first_name, last_name, email_addresses, image_url } = event.data;
+
+      const userData = {
+        _id: id,
+        name: `${first_name || ""} ${last_name || ""}`.trim(),
+        email: email_addresses?.[0]?.email_address || "",
+        image: image_url,
+      };
 
       try {
-        const newUser = await User.create({
-          _id: clerkUser.id,
-          name: `${clerkUser.name || "Unknown User"}`.trim(),
-          email: clerkUser.email,
-          image: clerkUser.image,
-        });
-
+        const newUser = await User.create(userData);
         console.log("✅ Clerk user created in Mongo:", newUser);
         return { success: true, userId: newUser._id };
       } catch (err) {
-        console.error("❌ Failed to create Clerk user in Mongo:", err.message);
+        console.error("❌ Failed to create Clerk user:", err.message);
         return { success: false, error: err.message };
       }
     }
@@ -181,23 +182,20 @@ export const functions = [
     { event: "clerk/user.updated" },
     async ({ event }) => {
       await connectDB();
-      const clerkUser = event.data;
+      const { id, first_name, last_name, email_addresses, image_url } = event.data;
+
+      const updateData = {
+        name: `${first_name || ""} ${last_name || ""}`.trim(),
+        email: email_addresses?.[0]?.email_address || "",
+        image: image_url,
+      };
 
       try {
-        const updatedUser = await User.findByIdAndUpdate(
-          clerkUser.id,
-          {
-            name: clerkUser.name,
-            email: clerkUser.email,
-            image: clerkUser.image,
-          },
-          { new: true, upsert: true }
-        );
-
+        const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true, upsert: true });
         console.log("🔄 Clerk user updated in Mongo:", updatedUser);
         return { success: true, userId: updatedUser._id };
       } catch (err) {
-        console.error("❌ Failed to update Clerk user in Mongo:", err.message);
+        console.error("❌ Failed to update Clerk user:", err.message);
         return { success: false, error: err.message };
       }
     }
@@ -209,14 +207,14 @@ export const functions = [
     { event: "clerk/user.deleted" },
     async ({ event }) => {
       await connectDB();
-      const clerkUser = event.data;
+      const { id } = event.data;
 
       try {
-        await User.findByIdAndDelete(clerkUser.id);
-        console.log("🗑️ Clerk user deleted from Mongo:", clerkUser.id);
-        return { success: true, userId: clerkUser.id };
+        await User.findByIdAndDelete(id);
+        console.log("🗑️ Clerk user deleted:", id);
+        return { success: true, userId: id };
       } catch (err) {
-        console.error("❌ Failed to delete Clerk user in Mongo:", err.message);
+        console.error("❌ Failed to delete Clerk user:", err.message);
         return { success: false, error: err.message };
       }
     }
