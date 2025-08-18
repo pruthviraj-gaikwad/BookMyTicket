@@ -7,5 +7,4 @@ const userSchema = new mongoose.Schema({
     image: { type: String }
 });
 
-// Don't define _id at all → MongoDB will auto-generate it
 export default mongoose.models.User || mongoose.model("User", userSchema);
